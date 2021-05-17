@@ -5,7 +5,7 @@ use(require("chai-as-promised"));
 
 describe("autoPipelining for single node", function () {
   it("should automatic add commands to auto pipelines", async () => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
 
     await redis.set("foo", "bar");
     expect(redis.autoPipelineQueueSize).to.eql(0);
@@ -19,7 +19,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should not add non-compatible commands to auto pipelines", async () => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
 
     expect(redis.autoPipelineQueueSize).to.eql(0);
     const promises = [];
@@ -33,6 +33,7 @@ describe("autoPipelining for single node", function () {
 
   it("should not add blacklisted commands to auto pipelines", async () => {
     const redis = new Redis({
+      host: 'redis',
       enableAutoPipelining: true,
       autoPipeliningIgnoredCommands: ["hmget"],
     });
@@ -45,7 +46,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should support custom commands", async () => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
 
     redis.defineCommand("echo", {
       numberOfKeys: 2,
@@ -60,7 +61,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should support multiple commands", async () => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     await redis.set("foo", "bar");
 
     expect(
@@ -75,7 +76,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should support commands queued after a pipeline is already queued for execution", (done) => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     let value1;
     expect(redis.autoPipelineQueueSize).to.eql(0);
 
@@ -103,7 +104,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should correctly track pipeline length", async () => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     expect(redis.autoPipelineQueueSize).to.eql(0);
     const promise1 = redis.set("foo", "bar");
     expect(redis.autoPipelineQueueSize).to.eql(1);
@@ -122,7 +123,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should handle rejections", async () => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     await redis.set("foo", "bar");
     await expect(redis.set("foo")).to.eventually.be.rejectedWith(
       "ERR wrong number of arguments for 'set' command"
@@ -130,7 +131,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should support callbacks in the happy case", (done) => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     let value1;
     expect(redis.autoPipelineQueueSize).to.eql(0);
 
@@ -162,7 +163,7 @@ describe("autoPipelining for single node", function () {
   });
 
   it("should support callbacks in the failure case", (done) => {
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     expect(redis.autoPipelineQueueSize).to.eql(0);
 
     redis.set("foo1", "bar1", (err) => {
@@ -195,7 +196,7 @@ describe("autoPipelining for single node", function () {
       done();
     });
 
-    const redis = new Redis({ enableAutoPipelining: true });
+    const redis = new Redis({ host: 'redis', enableAutoPipelining: true });
     expect(redis.autoPipelineQueueSize).to.eql(0);
 
     redis.set("foo1", "bar1", (err) => {

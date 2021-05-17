@@ -15,7 +15,7 @@ describe("tls option", () => {
         // @ts-ignore
         expect(op.ca).to.eql("123");
         // @ts-ignore
-        expect(op.servername).to.eql("localhost");
+        expect(op.servername).to.eql("redis");
         // @ts-ignore
         expect(op.rejectUnauthorized).to.eql(false);
         // @ts-ignore
@@ -28,7 +28,8 @@ describe("tls option", () => {
       });
 
       redis = new Redis({
-        tls: { ca: "123", servername: "localhost", rejectUnauthorized: false },
+        host: 'redis',
+        tls: { ca: "123", servername: "redis", rejectUnauthorized: false },
       });
       redis.on("ready", () => {
         redis.disconnect();
@@ -42,7 +43,7 @@ describe("tls option", () => {
     it("does not use tls option by default", (done) => {
       new MockServer(27379, function (argv) {
         if (argv[0] === "sentinel" && argv[1] === "get-master-addr-by-name") {
-          return ["127.0.0.1", "6379"];
+          return ["redis", "6379"];
         }
       });
 
@@ -51,6 +52,7 @@ describe("tls option", () => {
       });
 
       const redis = new Redis({
+        host: 'redis',
         sentinels: [{ port: 27379 }],
         name: "my",
         tls: { ca: "123" },
@@ -95,7 +97,7 @@ describe("tls option", () => {
     it("supports sentinelTLS", (done) => {
       new MockServer(27379, function (argv) {
         if (argv[0] === "sentinel" && argv[1] === "get-master-addr-by-name") {
-          return ["127.0.0.1", "6379"];
+          return ["redis", "6379"];
         }
       });
 

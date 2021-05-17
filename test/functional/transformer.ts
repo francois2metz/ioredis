@@ -5,7 +5,7 @@ describe("transformer", function () {
   describe("default transformer", function () {
     describe("hmset", function () {
       it("should support object", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.hmset("foo", { a: 1, b: "2" }, function (err, result) {
           expect(result).to.eql("OK");
           redis.hget("foo", "b", function (err, result) {
@@ -18,7 +18,7 @@ describe("transformer", function () {
         if (typeof Map === "undefined") {
           return done();
         }
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         const map = new Map();
         map.set("a", 1);
         map.set("b", "2");
@@ -31,7 +31,7 @@ describe("transformer", function () {
         });
       });
       it("should not affect the old way", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.hmset("foo", "a", 1, "b", "2", function (err, result) {
           expect(result).to.eql("OK");
           redis.hget("foo", "b", function (err, result) {
@@ -44,7 +44,7 @@ describe("transformer", function () {
 
     describe("mset", function () {
       it("should support object", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.mset({ a: 1, b: "2" }, function (err, result) {
           expect(result).to.eql("OK");
           redis.mget("a", "b", function (err, result) {
@@ -57,7 +57,7 @@ describe("transformer", function () {
         if (typeof Map === "undefined") {
           return done();
         }
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         const map = new Map();
         map.set("a", 1);
         map.set("b", "2");
@@ -70,7 +70,7 @@ describe("transformer", function () {
         });
       });
       it("should not affect the old way", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.mset("a", 1, "b", "2", function (err, result) {
           expect(result).to.eql("OK");
           redis.mget("a", "b", function (err, result) {
@@ -80,10 +80,10 @@ describe("transformer", function () {
         });
       });
       it("should work with keyPrefix option", function (done) {
-        const redis = new Redis({ keyPrefix: "foo:" });
+        const redis = new Redis({ host: 'redis', keyPrefix: "foo:" });
         redis.mset({ a: 1, b: "2" }, function (err, result) {
           expect(result).to.eql("OK");
-          const otherRedis = new Redis();
+          const otherRedis = new Redis({ host: 'redis' });
           otherRedis.mget("foo:a", "foo:b", function (err, result) {
             expect(result).to.eql(["1", "2"]);
             done();
@@ -94,7 +94,7 @@ describe("transformer", function () {
 
     describe("msetnx", function () {
       it("should support object", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.msetnx({ a: 1, b: "2" }, function (err, result) {
           expect(result).to.eql(1);
           redis.mget("a", "b", function (err, result) {
@@ -107,7 +107,7 @@ describe("transformer", function () {
         if (typeof Map === "undefined") {
           return done();
         }
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         const map = new Map();
         map.set("a", 1);
         map.set("b", "2");
@@ -120,7 +120,7 @@ describe("transformer", function () {
         });
       });
       it("should not affect the old way", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.msetnx("a", 1, "b", "2", function (err, result) {
           expect(result).to.eql(1);
           redis.mget("a", "b", function (err, result) {
@@ -130,10 +130,10 @@ describe("transformer", function () {
         });
       });
       it("should work with keyPrefix option", function (done) {
-        const redis = new Redis({ keyPrefix: "foo:" });
+        const redis = new Redis({ host: 'redis', keyPrefix: "foo:" });
         redis.msetnx({ a: 1, b: "2" }, function (err, result) {
           expect(result).to.eql(1);
-          const otherRedis = new Redis();
+          const otherRedis = new Redis({ host: 'redis' });
           otherRedis.mget("foo:a", "foo:b", function (err, result) {
             expect(result).to.eql(["1", "2"]);
             done();
@@ -144,7 +144,7 @@ describe("transformer", function () {
 
     describe("hgetall", function () {
       it("should return an object", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.hmset("foo", "k1", "v1", "k2", "v2", function () {
           redis.hgetall("foo", function (err, result) {
             expect(result).to.eql({ k1: "v1", k2: "v2" });
@@ -154,7 +154,7 @@ describe("transformer", function () {
       });
 
       it("should return {} when key not exists", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.hgetall("foo", function (err, result) {
           expect(result).to.eql({});
           done();
@@ -164,7 +164,7 @@ describe("transformer", function () {
 
     describe("hset", function () {
       it("should support object", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.hset("foo", { a: 1, b: "e", c: 123 }, function (err, result) {
           expect(result).to.eql(3);
           redis.hget("foo", "b", function (err, result) {
@@ -177,7 +177,7 @@ describe("transformer", function () {
         if (typeof Map === "undefined") {
           return done();
         }
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         const map = new Map();
         map.set("a", 1);
         map.set("b", "e");
@@ -190,7 +190,7 @@ describe("transformer", function () {
         });
       });
       it("should affect the old way", function (done) {
-        const redis = new Redis();
+        const redis = new Redis({ host: 'redis' });
         redis.hset("foo", "a", 1, "b", "e", function (err, result) {
           expect(result).to.eql(2);
           redis.hget("foo", "b", function (err, result) {

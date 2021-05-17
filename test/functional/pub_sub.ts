@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 describe("pub/sub", function () {
   it("should invoke the callback when subscribe successfully", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     let pending = 1;
     redis.subscribe("foo", "bar", function (err, count) {
       expect(count).to.eql(2);
@@ -18,7 +18,7 @@ describe("pub/sub", function () {
   });
 
   it("should reject when issue a command in the subscriber mode", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.subscribe("foo", function () {
       redis.set("foo", "bar", function (err) {
         expect(err instanceof Error);
@@ -30,7 +30,7 @@ describe("pub/sub", function () {
   });
 
   it("should exit subscriber mode using unsubscribe", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.subscribe("foo", "bar", function () {
       redis.unsubscribe("foo", "bar", function (err, count) {
         expect(count).to.eql(0);
@@ -53,8 +53,8 @@ describe("pub/sub", function () {
   });
 
   it("should receive messages when subscribe a channel", function (done) {
-    const redis = new Redis();
-    const pub = new Redis();
+    const redis = new Redis({ host: 'redis' });
+    const pub = new Redis({ host: 'redis' });
     let pending = 2;
     redis.subscribe("foo", function () {
       pub.publish("foo", "bar");
@@ -80,8 +80,8 @@ describe("pub/sub", function () {
   });
 
   it("should receive messages when psubscribe a pattern", function (done) {
-    const redis = new Redis();
-    const pub = new Redis();
+    const redis = new Redis({ host: 'redis' });
+    const pub = new Redis({ host: 'redis' });
     let pending = 2;
     redis.psubscribe("f?oo", function () {
       pub.publish("fzoo", "bar");
@@ -111,7 +111,7 @@ describe("pub/sub", function () {
   });
 
   it("should exit subscriber mode using punsubscribe", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.psubscribe("f?oo", "b?ar", function () {
       redis.punsubscribe("f?oo", "b?ar", function (err, count) {
         expect(count).to.eql(0);
@@ -134,7 +134,7 @@ describe("pub/sub", function () {
   });
 
   it("should be able to send quit command in the subscriber mode", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     let pending = 1;
     redis.subscribe("foo", function () {
       redis.quit(function () {
@@ -149,8 +149,8 @@ describe("pub/sub", function () {
   });
 
   it("should restore subscription after reconnecting(subscribe)", function (done) {
-    const redis = new Redis();
-    const pub = new Redis();
+    const redis = new Redis({ host: 'redis' });
+    const pub = new Redis({ host: 'redis' });
     redis.subscribe("foo", "bar", function () {
       redis.on("ready", function () {
         // Execute a random command to make sure that `subscribe`
@@ -173,8 +173,8 @@ describe("pub/sub", function () {
   });
 
   it("should restore subscription after reconnecting(psubscribe)", function (done) {
-    const redis = new Redis();
-    const pub = new Redis();
+    const redis = new Redis({ host: 'redis' });
+    const pub = new Redis({ host: 'redis' });
     redis.psubscribe("fo?o", "ba?r", function () {
       redis.on("ready", function () {
         redis.ping(function () {

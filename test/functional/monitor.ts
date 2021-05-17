@@ -4,7 +4,7 @@ import * as sinon from "sinon";
 
 describe("monitor", function () {
   it("should receive commands", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.on("ready", function () {
       redis.monitor(function (err, monitor) {
         if (err) {
@@ -24,7 +24,7 @@ describe("monitor", function () {
   });
 
   it("should reject processing commands", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.monitor(function (err, monitor) {
       monitor.get("foo", function (err) {
         expect(err.message).to.match(/Connection is in monitoring mode/);
@@ -36,7 +36,7 @@ describe("monitor", function () {
   });
 
   it("should continue monitoring after reconnection", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.monitor(function (err, monitor) {
       if (err) {
         done(err);
@@ -57,7 +57,7 @@ describe("monitor", function () {
   });
 
   it("should wait for the ready event before monitoring", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.on("ready", function () {
       const readyCheck = sinon.spy(Redis.prototype, "_readyCheck");
       redis.monitor(function (err, monitor) {

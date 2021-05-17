@@ -14,6 +14,7 @@ describe("reconnectOnError", function () {
       }
     }
     const redis = new Redis({
+      host: 'redis',
       reconnectOnError: function (err) {
         assert(err);
         return 1;
@@ -27,6 +28,7 @@ describe("reconnectOnError", function () {
 
   it("should not reconnect if reconnectOnError returns false", function (done) {
     const redis = new Redis({
+      host: 'redis',
       reconnectOnError: function (err) {
         return false;
       },
@@ -43,6 +45,7 @@ describe("reconnectOnError", function () {
 
   it("should reconnect if reconnectOnError returns true or 1", function (done) {
     const redis = new Redis({
+      host: 'redis',
       reconnectOnError: function () {
         return true;
       },
@@ -57,6 +60,7 @@ describe("reconnectOnError", function () {
 
   it("should reconnect and retry the command if reconnectOnError returns 2", function (done) {
     var redis = new Redis({
+      host: 'redis',
       reconnectOnError: function () {
         redis.del("foo");
         return 2;
@@ -72,6 +76,7 @@ describe("reconnectOnError", function () {
 
   it("should select the currect database", function (done) {
     var redis = new Redis({
+      host: 'redis',
       reconnectOnError: function () {
         redis.select(3);
         redis.del("foo");
@@ -94,6 +99,7 @@ describe("reconnectOnError", function () {
 
   it("should work with pipeline", function (done) {
     var redis = new Redis({
+      host: 'redis',
       reconnectOnError: function () {
         redis.del("foo");
         return 2;
@@ -116,6 +122,7 @@ describe("reconnectOnError", function () {
 
   it("should work with pipelined multi", function (done) {
     var redis = new Redis({
+      host: 'redis',
       reconnectOnError: function () {
         // deleting foo allows sadd below to succeed on the second try
         redis.del("foo");

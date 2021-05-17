@@ -8,14 +8,14 @@ import { Cluster } from "../../lib";
 describe("*scanStream", function () {
   describe("scanStream", function () {
     it("should return a readable stream", function () {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       const stream = redis.scanStream();
       expect(stream instanceof Readable).to.eql(true);
     });
 
     it("should iterate all keys", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.mset(
         "foo1",
         1,
@@ -49,7 +49,7 @@ describe("*scanStream", function () {
 
     it("should recognize `MATCH`", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.mset(
         "foo1",
         1,
@@ -79,7 +79,7 @@ describe("*scanStream", function () {
 
     it("should recognize `TYPE`", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.set("foo1", "bar");
       redis.set("foo2", "bar");
       redis.set("foo3", "bar");
@@ -101,7 +101,7 @@ describe("*scanStream", function () {
 
     it("should recognize `COUNT`", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       sinon.spy(Redis.prototype, "scan");
       redis.mset(
         "foo1",
@@ -150,7 +150,7 @@ describe("*scanStream", function () {
 
     it("should emit an error when connection is down", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.mset(
         "foo1",
         1,
@@ -180,7 +180,7 @@ describe("*scanStream", function () {
   describe("scanBufferStream", function () {
     it("should return buffer", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.mset(
         "foo1",
         1,
@@ -216,7 +216,7 @@ describe("*scanStream", function () {
   describe("sscanStream", function () {
     it("should iterate all values in the set", function (done) {
       let keys = [];
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.sadd("set", "foo1", "foo2", "foo3", "foo4", "foo10", function () {
         const stream = redis.sscanStream("set", { match: "foo??" });
         stream.on("data", function (data) {

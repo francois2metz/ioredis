@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 describe("pipeline", function () {
   it("should return correct result", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis
       .pipeline()
       .set("foo", "1")
@@ -26,7 +26,7 @@ describe("pipeline", function () {
   });
 
   it("should return an empty array on empty pipeline", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.pipeline().exec(function (err, results) {
       expect(err).to.eql(null);
       expect(results).to.eql([]);
@@ -36,7 +36,7 @@ describe("pipeline", function () {
   });
 
   it("should support mix string command and buffer command", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis
       .pipeline()
       .set("foo", "bar")
@@ -57,7 +57,7 @@ describe("pipeline", function () {
   });
 
   it("should handle error correctly", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis
       .pipeline()
       .set("foo")
@@ -72,7 +72,7 @@ describe("pipeline", function () {
   });
 
   it("should also invoke the command's callback", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     let pending = 1;
     redis
       .pipeline()
@@ -90,7 +90,7 @@ describe("pipeline", function () {
   });
 
   it("should support inline transaction", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis
       .pipeline()
@@ -109,14 +109,14 @@ describe("pipeline", function () {
   });
 
   it("should have the same options as its container", function () {
-    const redis = new Redis({ showFriendlyErrorStack: true });
+    const redis = new Redis({ host: 'redis', showFriendlyErrorStack: true });
     const pipeline = redis.pipeline();
     expect(pipeline.options).to.have.property("showFriendlyErrorStack", true);
     redis.disconnect();
   });
 
   it("should support key prefixing", function (done) {
-    const redis = new Redis({ keyPrefix: "foo:" });
+    const redis = new Redis({ host: 'redis', keyPrefix: "foo:" });
     redis
       .pipeline()
       .set("bar", "baz")
@@ -142,7 +142,7 @@ describe("pipeline", function () {
     let redis;
 
     beforeEach(function () {
-      redis = new Redis();
+      redis = new Redis({ host: 'redis' });
       redis.defineCommand("echo", {
         numberOfKeys: 2,
         lua: "return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}",
@@ -200,7 +200,7 @@ describe("pipeline", function () {
 
   describe("#addBatch", function () {
     it("should accept commands in constructor", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       let pending = 1;
       redis
         .pipeline([
@@ -225,7 +225,7 @@ describe("pipeline", function () {
 
   describe("exec", function () {
     it("should group results", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.multi({ pipeline: false });
       redis.set("foo", "bar");
       redis.get("foo");
@@ -236,7 +236,7 @@ describe("pipeline", function () {
     });
 
     it("should allow omitting callback", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.exec().catch(function (err) {
         expect(err.message).to.eql("ERR EXEC without MULTI");
         redis.disconnect();
@@ -245,7 +245,7 @@ describe("pipeline", function () {
     });
 
     it("should batch all commands before ready event", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.on("connect", function () {
         redis
           .pipeline()
@@ -265,7 +265,7 @@ describe("pipeline", function () {
     });
 
     it("should check and load uniq scripts only", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.defineCommand("test", {
         numberOfKeys: 2,
         lua: "return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}",
@@ -323,7 +323,7 @@ describe("pipeline", function () {
 
     it("should support parallel script execution", function (done) {
       const random = `${Math.random()}`;
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.defineCommand("something", {
         numberOfKeys: 0,
         lua: `return "${random}"`,
@@ -346,7 +346,7 @@ describe("pipeline", function () {
 
   describe("#length", function () {
     it("return the command count", function () {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
 
       const pipeline1 = redis
         .pipeline()

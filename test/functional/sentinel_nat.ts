@@ -13,7 +13,7 @@ describe("sentinel_nat", function () {
       sentinels: [{ host: "127.0.0.1", port: 27379 }],
       natMap: {
         "127.0.0.1:17380": {
-          host: "localhost",
+          host: "redis",
           port: 6379,
         },
       },

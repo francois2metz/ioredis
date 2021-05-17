@@ -15,7 +15,7 @@ describe("lazy connect", function () {
   });
 
   it("should connect when calling a command", function (done) {
-    const redis = new Redis({ lazyConnect: true });
+    const redis = new Redis({ host: 'redis', lazyConnect: true });
     redis.set("foo", "bar");
     redis.get("foo", function (err, result) {
       expect(result).to.eql("bar");
@@ -24,7 +24,7 @@ describe("lazy connect", function () {
   });
 
   it("should not try to reconnect when disconnected manually", function (done) {
-    const redis = new Redis({ lazyConnect: true });
+    const redis = new Redis({ host: 'redis', lazyConnect: true });
     redis.get("foo", function () {
       redis.disconnect();
       redis.get("foo", function (err) {
@@ -55,7 +55,7 @@ describe("lazy connect", function () {
       const stub = sinon
         .stub(Cluster.prototype, "connect")
         .throws(new Error("`connect` should not be called"));
-      const cluster = new Cluster([], { lazyConnect: true });
+        const cluster = new Cluster([], { host: 'redis', lazyConnect: true });
       cluster.quit(function () {
         cluster.once("close", function () {
           cluster.once("end", function () {

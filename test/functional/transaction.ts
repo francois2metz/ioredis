@@ -4,7 +4,7 @@ import Command from "../../lib/command";
 
 describe("transaction", function () {
   it("should works like pipeline by default", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis
       .multi()
       .set("foo", "transaction")
@@ -20,7 +20,7 @@ describe("transaction", function () {
   });
 
   it("should handle runtime errors correctly", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis
       .multi()
       .set("foo", "bar")
@@ -36,7 +36,7 @@ describe("transaction", function () {
   });
 
   it("should handle compile-time errors correctly", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis
       .multi()
       .set("foo")
@@ -51,7 +51,7 @@ describe("transaction", function () {
   });
 
   it("should also support command callbacks", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     let pending = 1;
     redis
       .multi()
@@ -71,7 +71,7 @@ describe("transaction", function () {
   });
 
   it("should also handle errors in command callbacks", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     let pending = 1;
     redis
       .multi()
@@ -90,7 +90,7 @@ describe("transaction", function () {
   });
 
   it("should work without pipeline", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.multi({ pipeline: false });
     redis.set("foo", "bar");
     redis.get("foo");
@@ -105,7 +105,7 @@ describe("transaction", function () {
 
   describe("transformer", function () {
     it("should trigger transformer", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       let pending = 2;
       const data = { name: "Bob", age: "17" };
       redis
@@ -143,7 +143,7 @@ describe("transaction", function () {
     });
 
     it("should trigger transformer inside pipeline", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       const data = { name: "Bob", age: "17" };
       redis
         .pipeline()
@@ -171,7 +171,7 @@ describe("transaction", function () {
         throw new Error(transformError);
       };
 
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis
         .multi()
         .get("foo")
@@ -186,7 +186,7 @@ describe("transaction", function () {
 
   describe("#addBatch", function () {
     it("should accept commands in constructor", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       let pending = 1;
       redis
         .multi([
@@ -210,7 +210,7 @@ describe("transaction", function () {
 
   describe("#exec", function () {
     it("should batch all commands before ready event", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.on("connect", function () {
         redis
           .multi()

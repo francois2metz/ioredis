@@ -3,7 +3,7 @@ import * as sinon from "sinon";
 
 describe("ready_check", function () {
   it("should retry when redis is not ready", function (done) {
-    const redis = new Redis({ lazyConnect: true });
+    const redis = new Redis({ host: 'redis', lazyConnect: true });
 
     sinon.stub(redis, "info").callsFake((callback) => {
       callback(null, "loading:1\r\nloading_eta_seconds:7");
@@ -21,6 +21,7 @@ describe("ready_check", function () {
 
   it("should reconnect when info return a error", function (done) {
     const redis = new Redis({
+      host: 'redis', 
       lazyConnect: true,
       retryStrategy: function () {
         done();

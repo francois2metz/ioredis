@@ -7,6 +7,7 @@ describe("stringNumbers", function () {
   context("enabled", function () {
     it("returns numbers as strings", function (done) {
       const redis = new Redis({
+        host: 'redis',
         stringNumbers: true,
       });
 
@@ -40,7 +41,7 @@ describe("stringNumbers", function () {
 
   context("disabled", function () {
     it("returns numbers", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
 
       redis.set("foo", "123");
       redis.incr("foo", function (err, res) {

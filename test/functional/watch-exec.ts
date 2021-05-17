@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 describe("watch-exec", function () {
   it("should support watch/exec transactions", function () {
-    const redis1 = new Redis();
+    const redis1 = new Redis({ host: 'redis' });
     return redis1
       .watch("watchkey")
       .then(function () {
@@ -16,8 +16,8 @@ describe("watch-exec", function () {
   });
 
   it("should support watch/exec transaction rollback", function () {
-    const redis1 = new Redis();
-    const redis2 = new Redis();
+    const redis1 = new Redis({ host: 'redis' });
+    const redis2 = new Redis({ host: 'redis' });
     return redis1
       .watch("watchkey")
       .then(function () {

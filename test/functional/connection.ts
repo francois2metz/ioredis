@@ -9,7 +9,7 @@ import { CONNECTION_CLOSED_ERROR_MSG } from "../../lib/utils";
 
 describe("connection", function () {
   it('should emit "connect" when connected', function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.on("connect", function () {
       redis.disconnect();
       done();
@@ -17,7 +17,7 @@ describe("connection", function () {
   });
 
   it('should emit "close" when disconnected', function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.once("end", done);
     redis.once("connect", function () {
       redis.disconnect();
@@ -25,7 +25,7 @@ describe("connection", function () {
   });
 
   it("should send AUTH command before any other commands", function (done) {
-    const redis = new Redis({ password: "123" });
+    const redis = new Redis({ host: 'redis', password: "123" });
     redis.get("foo");
     let times = 0;
     sinon.stub(redis, "sendCommand").callsFake((command) => {
@@ -41,7 +41,7 @@ describe("connection", function () {
   });
 
   it("should receive replies after connection is disconnected", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.set("foo", "bar", function () {
       redis.stream.end();
     });
@@ -53,7 +53,7 @@ describe("connection", function () {
   });
 
   it("connects successfully immediately after end", (done) => {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.once("end", async () => {
       await redis.connect();
       done();
@@ -63,7 +63,7 @@ describe("connection", function () {
   });
 
   it("connects successfully immediately after quit", (done) => {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.once("end", async () => {
       await redis.connect();
       done();
@@ -99,7 +99,7 @@ describe("connection", function () {
 
     it("should clear the timeout when connected", function (done) {
       const connectTimeout = 10000;
-      const redis = new Redis({ connectTimeout });
+      const redis = new Redis({ host: 'redis', connectTimeout });
       let set = false;
 
       // TODO: use spy
@@ -121,6 +121,7 @@ describe("connection", function () {
 
     it("should ignore timeout if connect", function (done) {
       const redis = new Redis({
+        host: 'redis',
         port: 6379,
         connectTimeout: 500,
         retryStrategy: null,
@@ -155,7 +156,7 @@ describe("connection", function () {
   describe("#connect", function () {
     it("should return a promise", function (done) {
       let pending = 2;
-      const redis = new Redis({ lazyConnect: true });
+      const redis = new Redis({ host: 'redis', lazyConnect: true });
       redis.connect().then(function () {
         redis.disconnect();
         if (!--pending) {
@@ -164,6 +165,7 @@ describe("connection", function () {
       });
 
       const redis2 = new Redis(6390, {
+        host: 'redis',
         lazyConnect: true,
         retryStrategy: null,
       });
@@ -176,7 +178,7 @@ describe("connection", function () {
     });
 
     it("should stop reconnecting when disconnected", function (done) {
-      const redis = new Redis(8999, {
+      const redis = new Redis(8999, 'redis', {
         retryStrategy: function () {
           return 0;
         },
@@ -195,7 +197,7 @@ describe("connection", function () {
     });
 
     it("should reject when connected", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.connect().catch(function (err) {
         expect(err.message).to.match(/Redis is already connecting/);
         redis.disconnect();
@@ -204,7 +206,7 @@ describe("connection", function () {
     });
 
     it("should resolve when the status become ready", function (done) {
-      const redis = new Redis({ lazyConnect: true });
+      const redis = new Redis({ host: 'redis', lazyConnect: true });
       redis.connect().then(function () {
         expect(redis.status).to.eql("ready");
         redis.disconnect();
@@ -214,6 +216,7 @@ describe("connection", function () {
 
     it("should reject when closed (reconnecting)", function (done) {
       const redis = new Redis({
+        host: 'redis',
         port: 8989,
         lazyConnect: true,
         retryStrategy: function () {
@@ -230,6 +233,7 @@ describe("connection", function () {
 
     it("should reject when closed (end)", function (done) {
       const redis = new Redis({
+        host: 'redis',
         port: 8989,
         lazyConnect: true,
         retryStrategy: null,
@@ -256,7 +260,7 @@ describe("connection", function () {
       let closed = false;
       let errored = false;
 
-      const redis = new Redis({ lazyConnect: true });
+      const redis = new Redis({ host: 'redis', lazyConnect: true });
       redis
         .connect(() => {})
         .catch((err) => {
@@ -343,7 +347,7 @@ describe("connection", function () {
 
   describe("connectionName", function () {
     it("should name the connection if options.connectionName is not null", function (done) {
-      const redis = new Redis({ connectionName: "niceName" });
+      const redis = new Redis({ host: 'redis', connectionName: "niceName" });
       redis.once("ready", function () {
         redis.client("getname", function (err, res) {
           expect(res).to.eql("niceName");
@@ -355,7 +359,7 @@ describe("connection", function () {
     });
 
     it("should set the name before any subscribe command if reconnected", function (done) {
-      const redis = new Redis({ connectionName: "niceName" });
+      const redis = new Redis({ host: 'redis', connectionName: "niceName" });
       redis.once("ready", function () {
         redis.subscribe("l", function () {
           redis.disconnect(true);
@@ -396,8 +400,8 @@ describe("connection", function () {
 
   describe("autoResendUnfulfilledCommands", function () {
     it("should resend unfulfilled commands to the correct db when reconnected", function (done) {
-      const redis = new Redis({ db: 3 });
-      const pub = new Redis({ db: 3 });
+      const redis = new Redis({ host: 'redis', db: 3 });
+      const pub = new Redis({ host: 'redis', db: 3 });
       redis.once("ready", function () {
         let pending = 2;
         redis.blpop("l", 0, function (err, res) {
@@ -428,8 +432,8 @@ describe("connection", function () {
     });
 
     it("should resend previous subscribes before sending unfulfilled commands", function (done) {
-      const redis = new Redis({ db: 4 });
-      const pub = new Redis({ db: 4 });
+      const redis = new Redis({ host: 'redis', db: 4 });
+      const pub = new Redis({ host: 'redis', db: 4 });
       redis.once("ready", function () {
         pub.pubsub("channels", function (err, channelsBefore) {
           redis.subscribe("l", function () {
@@ -463,7 +467,7 @@ describe("connection", function () {
     it("works when connection established before promise is resolved", (done) => {
       const socket = new net.Socket();
       sinon.stub(StandaloneConnector.prototype, "connect").resolves(socket);
-      socket.connect(6379, "127.0.0.1").on("connect", () => {
+      socket.connect(6379, "redis").on("connect", () => {
         new Redis().on("connect", () => done());
       });
     });
@@ -472,7 +476,7 @@ describe("connection", function () {
       const socketSetTimeoutSpy = sinon.spy(net.Socket.prototype, "setTimeout");
       const socket = new net.Socket();
       sinon.stub(StandaloneConnector.prototype, "connect").resolves(socket);
-      socket.connect(6379, "127.0.0.1").on("connect", () => {
+      socket.connect(6379, "redis").on("connect", () => {
         const redis = new Redis({
           connectTimeout: 1,
         });
@@ -489,7 +493,7 @@ describe("connection", function () {
 
   describe("multiple reconnect", function () {
     it("should reconnect after multiple consecutive disconnect(true) are called", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
       redis.once("reconnecting", function () {
         redis.disconnect(true);
       });
@@ -513,7 +517,7 @@ describe("connection", function () {
 
 describe("disconnection", function () {
   it("should clear the added script hashes interval when disconnecting", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.once("ready", function () {
       redis.disconnect();
 
@@ -523,7 +527,7 @@ describe("disconnection", function () {
   });
 
   it("should clear the added script hashes interval when quitting", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
     redis.once("ready", function () {
       redis.quit();
 

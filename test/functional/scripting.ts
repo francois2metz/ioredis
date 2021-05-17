@@ -4,7 +4,7 @@ import { expect } from "chai";
 describe("scripting", function () {
   describe("#numberOfKeys", function () {
     it("should recognize the numberOfKeys property", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
 
       redis.defineCommand("test", {
         numberOfKeys: 2,
@@ -19,7 +19,7 @@ describe("scripting", function () {
     });
 
     it("should support dynamic key count", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
 
       redis.defineCommand("test", {
         lua: "return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}",
@@ -33,7 +33,7 @@ describe("scripting", function () {
     });
 
     it("should support numberOfKeys being 0", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
 
       redis.defineCommand("test", {
         numberOfKeys: 0,
@@ -48,7 +48,7 @@ describe("scripting", function () {
     });
 
     it("should throw when numberOfKeys is omit", function (done) {
-      const redis = new Redis();
+      const redis = new Redis({ host: 'redis' });
 
       redis.defineCommand("test", {
         lua: "return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}",
@@ -64,7 +64,7 @@ describe("scripting", function () {
   });
 
   it("should have a buffer version", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis.defineCommand("test", {
       numberOfKeys: 2,
@@ -84,7 +84,7 @@ describe("scripting", function () {
   });
 
   it("should work well with pipeline", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis.defineCommand("test", {
       numberOfKeys: 1,
@@ -106,7 +106,7 @@ describe("scripting", function () {
   });
 
   it("should following pipeline style when throw", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis.defineCommand("test", {
       lua: 'return redis.call("get", KEYS[1])',
@@ -126,7 +126,7 @@ describe("scripting", function () {
   });
 
   it("should use evalsha when script is loaded", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis.on("ready", function () {
       redis.defineCommand("test", {
@@ -150,7 +150,7 @@ describe("scripting", function () {
   });
 
   it("should try to use EVALSHA and fallback to EVAL if fails", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis.defineCommand("test", {
       numberOfKeys: 1,
@@ -158,7 +158,7 @@ describe("scripting", function () {
     });
 
     redis.once("ready", function () {
-      const flush = new Redis();
+      const flush = new Redis({ host: 'redis' });
       flush.script("flush", function () {
         const expectedComands = ["evalsha", "eval", "get", "evalsha", "get"];
         redis.monitor(function (err, monitor) {
@@ -180,7 +180,7 @@ describe("scripting", function () {
   });
 
   it("should load scripts first before execute pipeline", function (done) {
-    const redis = new Redis();
+    const redis = new Redis({ host: 'redis' });
 
     redis.defineCommand("testGet", {
       numberOfKeys: 1,
@@ -218,7 +218,7 @@ describe("scripting", function () {
   });
 
   it("should support key prefixing", function (done) {
-    const redis = new Redis({ keyPrefix: "foo:" });
+    const redis = new Redis({ host: 'redis', keyPrefix: "foo:" });
 
     redis.defineCommand("echo", {
       numberOfKeys: 2,

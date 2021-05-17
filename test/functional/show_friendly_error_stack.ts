@@ -6,7 +6,7 @@ const scriptName = path.basename(__filename);
 
 describe("showFriendlyErrorStack", function () {
   it("should show friendly error stack", function (done) {
-    const redis = new Redis({ showFriendlyErrorStack: true });
+    const redis = new Redis({ host: 'redis', showFriendlyErrorStack: true });
     redis.set("foo").catch(function (err) {
       const errors = err.stack.split("\n");
       expect(errors[0].indexOf("ReplyError")).not.eql(-1);

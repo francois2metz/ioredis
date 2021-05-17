@@ -3,12 +3,12 @@ import { expect } from "chai";
 
 describe("dropBufferSupport", function () {
   it("should be disabled by default", function () {
-    const redis = new Redis({ lazyConnect: true });
+    const redis = new Redis({ host: 'redis', lazyConnect: true });
     expect(redis.options).to.have.property("dropBufferSupport", false);
   });
 
   it("should return strings correctly", function (done) {
-    const redis = new Redis({ dropBufferSupport: false });
+    const redis = new Redis({ host: 'redis', dropBufferSupport: false });
     redis.set("foo", Buffer.from("bar"), function (err, res) {
       expect(err).to.eql(null);
       expect(res).to.eql("OK");
@@ -23,7 +23,7 @@ describe("dropBufferSupport", function () {
 
   context("enabled", function () {
     it("should reject the buffer commands", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       redis.getBuffer("foo", function (err) {
         expect(err.message).to.match(/Buffer methods are not available/);
 
@@ -36,7 +36,7 @@ describe("dropBufferSupport", function () {
     });
 
     it("should reject the custom buffer commands", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       redis.defineCommand("geteval", {
         numberOfKeys: 0,
         lua: 'return "string"',
@@ -49,7 +49,7 @@ describe("dropBufferSupport", function () {
     });
 
     it("should return strings correctly", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       redis.set("foo", Buffer.from("bar"), function (err, res) {
         expect(err).to.eql(null);
         expect(res).to.eql("OK");
@@ -63,7 +63,7 @@ describe("dropBufferSupport", function () {
     });
 
     it("should return strings for custom commands", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       redis.defineCommand("geteval", {
         numberOfKeys: 0,
         lua: 'return "string"',
@@ -77,7 +77,7 @@ describe("dropBufferSupport", function () {
     });
 
     it("should work with pipeline", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       const pipeline = redis.pipeline();
       pipeline.set("foo", "bar");
       pipeline.get(Buffer.from("foo"));
@@ -91,7 +91,7 @@ describe("dropBufferSupport", function () {
     });
 
     it("should work with transaction", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       redis
         .multi()
         .set("foo", "bar")
@@ -106,7 +106,7 @@ describe("dropBufferSupport", function () {
     });
 
     it("should fail early with Buffer transaction", function (done) {
-      const redis = new Redis({ dropBufferSupport: true });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true });
       redis
         .multi()
         .set("foo", "bar")
@@ -118,8 +118,8 @@ describe("dropBufferSupport", function () {
     });
 
     it("should work with internal select command", function (done) {
-      const redis = new Redis({ dropBufferSupport: true, db: 1 });
-      const check = new Redis({ db: 1 });
+      const redis = new Redis({ host: 'redis', dropBufferSupport: true, db: 1 });
+      const check = new Redis({ host: 'redis', db: 1 });
       redis.set("foo", "bar", function () {
         check.get("foo", function (err, res) {
           expect(res).to.eql("bar");
